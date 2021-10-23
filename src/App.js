@@ -1,23 +1,29 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useState } from 'react';
+import {Container, Row, Col} from 'react-bootstrap'
 
-function App() {
+const App = () => {
+  const [score, setScore] = useState([]);
+  const [owed, setOwed] = useState([]); 
+  const [emailed, setEmail] = useState([]);
+  const [payCard, setCard] = useState([]); 
+  
+  const genRAK = e => {
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header>
+        <h1>KREDIBLE</h1>
       </header>
+      <Container>
+        <Row>
+          <Col> Buy Food Col</Col>
+          <Col> Pet Col </Col>
+          <Col> money col </Col>
+        </Row>
+      </Container>
+      {/* credit object here */}
     </div>
   );
 }
