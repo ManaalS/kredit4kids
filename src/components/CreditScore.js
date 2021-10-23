@@ -1,5 +1,6 @@
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Timer from "./Timer"
 import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap'
 import { Button } from "@chakra-ui/react"
@@ -23,22 +24,35 @@ import {
 } from "@chakra-ui/react"
 
 
+
 function CreditScore(props) {
   const [creditScore, setCreditScore] = useState(props.creditScore);
   const [moneyOwed, setMoneyOwed] = useState(props.moneyOwed)
-  const [adjustedProgress, setAdjustedProgress] = useState(props.creditScore / 10)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [colorZone, setColorZone] = useState("green.400")
   const [paymentAmount, setPaymentAmount] = useState(0)
+  const [minutes, setMinutes] = useState(0)
+  const [seconds, setSeconds] = useState(0)
 
   function updateCreditScore() {
-    let score = 0
-    setCreditScore(score)
+    setCreditScore(creditScore)
+    if (creditScore <= 589) {
+      setColorZone("red.400")
+    } else {
+      setColorZone("green.400")
+    }
+  }
+  
+  function resetTimer() {
+    setMinutes(0)
+    setSeconds(0)
   }
 
-  function submitPayment(payment) {
-    setMoneyOwed(moneyOwed - payment)
+  function submitPayment() {
+    setMoneyOwed(moneyOwed - paymentAmount)
     updateCreditScore()
+    setPaymentAmount(0)
+    resetTimer()
     onClose()
   }
 
@@ -47,8 +61,8 @@ function CreditScore(props) {
       <Row>
         <Col>
           <h1> Your Credit Score </h1>
-          <CircularProgress size="120px" value={adjustedProgress} color={colorZone}>
-            <CircularProgressLabel>{props.creditScore}</CircularProgressLabel>
+          <CircularProgress size="120px" value={creditScore / 10} color={colorZone}>
+            <CircularProgressLabel>{creditScore}</CircularProgressLabel>
           </CircularProgress>
         </Col>
       </Row>
@@ -64,7 +78,7 @@ function CreditScore(props) {
               <ModalHeader>How much do you want to pay?</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <Slider onChange={(value) => { setPaymentAmount(value) }} defaultValue={0} min={0} max={props.moneyOwed} step={1}>
+                <Slider onChange={(value) => { setPaymentAmount(value) }} defaultValue={0} min={0} max={moneyOwed} step={1}>
                   <SliderTrack bg="blue.100">
                     <Box position="relative" right={10} />
                     <SliderFilledTrack bg="blue" />
@@ -74,7 +88,7 @@ function CreditScore(props) {
                 {paymentAmount}
               </ModalBody>
               <ModalFooter>
-                <Button onClick={(e) => submitPayment(e)}>Submit</Button>
+                <Button onClick={() => submitPayment()}>Submit</Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
@@ -82,7 +96,7 @@ function CreditScore(props) {
       </Row>
       <Row>
         <Col>
-          <h1> Next Deadline: 00:00:00 </h1>
+          <h1> Next Payment Deadline: <Timer minutes={minutes} seconds={seconds}></Timer></h1>
         </Col>
       </Row>
     </Container>
