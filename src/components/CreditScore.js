@@ -31,8 +31,8 @@ function CreditScore(props) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [colorZone, setColorZone] = useState("green.400")
   const [paymentAmount, setPaymentAmount] = useState(0)
-  const [minutes, setMinutes] = useState(0)
-  const [seconds, setSeconds] = useState(0)
+  const [minutes, setMinutes] = useState(props.minutes)
+  const [seconds, setSeconds] = useState(props.seconds)
 
   function updateCreditScore() {
     setCreditScore(creditScore)
@@ -56,6 +56,9 @@ function CreditScore(props) {
     onClose()
   }
 
+  React.useEffect(() => {
+    // execute some code
+}, [moneyOwed])
   return (
     <Container className="credit-score">
       <Row>
@@ -73,8 +76,8 @@ function CreditScore(props) {
             Pay Card
           </Button>
           <Modal onClose={onClose} isOpen={isOpen} isCentered>
-            <ModalOverlay />
-            <ModalContent>
+            <ModalOverlay/>
+            <ModalContent className="credit-score">
               <ModalHeader>How much do you want to pay?</ModalHeader>
               <ModalCloseButton />
               <ModalBody>

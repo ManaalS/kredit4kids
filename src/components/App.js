@@ -3,15 +3,13 @@ import '../index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Food from './Food';
 
-import CreditScore from './CreditScore'
 import { ChakraProvider } from "@chakra-ui/react"
 
 
 function App() {
   return (
     <ChakraProvider>
-      <Food></Food>
-      <CreditScore moneyOwed={50} creditScore={750}></CreditScore>
+      <Food moneyOwed={0} leftToBorrow={50} moneyYouHave={0}></Food>
     </ChakraProvider>
 
   )

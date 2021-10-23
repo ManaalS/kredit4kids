@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
-import '../App.css'; 
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Alert} from 'react-bootstrap';
+import CreditScore from './CreditScore';
+import { Button } from "@chakra-ui/react"
+import '.././index.css'
 
-const Food = () => {
-  const [owed, setOwed] = useState(0); 
-  const [leftToBorrow, borrow] = useState(30);
-  const [owned, updateMoney] = useState(0);
+
+
+
+const Food = (props) => {
+  const [owed, setOwed] = useState(props.moneyOwed); 
+  const [leftToBorrow, borrow] = useState(props.leftToBorrow);
+  const [owned, updateMoney] = useState(props.moneyYouHave);
+  const [minutes, setMinutes] = useState(0)
+  const [seconds, setSeconds] = useState(0)
+
   function buyItem(price) {
     if(owned >= price) {
       updateMoney(owned - price);
     }
     else {
       let remaining = owned - price;
+      setMinutes(5)
       if(leftToBorrow >= -1*remaining) {
         borrow(leftToBorrow + remaining)
-        setOwed(-1*remaining)
+        setOwed(-1*remaining + owed)
       }
       else {
         console.log("in statement");
@@ -25,20 +34,44 @@ const Food = () => {
   }
 
   return (
-    <div className="App">
-      <Container>
+    <div>
+      <Container className="food">
         <Row>
+          <Col>
+          <Row className="spacing">
           <Col> 
-            <h2> Buy Food!</h2>
-            <img src= "https://lh3.googleusercontent.com/proxy/04KTWUKZ-JxUhueUXmxp4t80D24vQtGr3T_hHqj4Qw66bg-ncctQREJDKuEZ1ISMgD9t9anaWY4XdLWLWG2xibqSbIEkduA5-NLY80DlVjQjwbbXzcunwJ69yxaCY7xnu0L4bq9m6qVzAM20korNlZW2aCfBDAW0kgcbKBmu-5eVAYaN" alt="Logo"></img>;
-            <p>Money you can borrow: {leftToBorrow}</p>
-            <button onClick={() => buyItem(5)}><p>Buy an apple ($5)</p></button> 
-            <button onClick={() => buyItem(10)}><p>Buy a fish ($10)</p></button> 
-            <button onClick={() => buyItem(15)}><p>Buy a mango ($15)</p></button> 
+            <h1> Buy Food!</h1>
+            <p>Money you can borrow: ${leftToBorrow}</p>
+            <p>Money owed: {owed} </p> 
            </Col>
         </Row>
+        <Row className = "spacing">
+        <Button colorScheme="blue" onClick={() => buyItem(5)}><p>Buy an apple ($5)</p></Button> 
+        </Row>
+        <Row className = "spacing">
+        <Button colorScheme="blue" onClick={() => buyItem(10)}><p>Buy a fish ($10)</p></Button> 
+        </Row>
+        <Row className = "spacing">
+        <Button colorScheme="blue"  onClick={() => buyItem(15)}><p>Buy a mango ($15)</p></Button> 
+        </Row>
+          </Col>
+          <Col>
+          cat
+          </Col>
+          <Col>
+          <Col> 
+            <h1> Earn Money!</h1>
+            <p>Money you have: ${owned}</p>
+            <Row className = "spacing">
+            <Button colorScheme="blue"  onClick={() => buyItem(15)}><p>Perform a random act of kindness</p></Button> 
+            </Row>
+           </Col>
+          </Col>
+        </Row>
+        
+        <CreditScore minutes ={minutes} seconds = {seconds} moneyOwed={owed} creditScore={750}></CreditScore>
       </Container>
-      {/* credit object here */}
+      
     </div>
   );
 }
