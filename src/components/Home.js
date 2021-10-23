@@ -27,7 +27,7 @@ import { useDisclosure } from "@chakra-ui/react"
 
 
 
-const Food = (props) => {
+const Home = (props) => {
   const [minutes, setMinutes ] = useState(0);
   const [seconds, setSeconds ] =  useState(0);
   const [timerColor, setTimerColor] = useState("white")
@@ -95,7 +95,10 @@ const Food = (props) => {
     });
   return (
     <div>
-      <Container className="food">
+      <Container className="title">
+      <h1> Kredible </h1>
+      </Container>
+      <Container id="food">
         <Row>
           <Col>
             <Row className="spacing">
@@ -127,7 +130,9 @@ const Food = (props) => {
             </Col>
           </Col>
         </Row>
-        <Row id="credit-score">
+        </Container>
+        <Container className="credit-score">
+        <Row>
           <CreditScore minutes={minutes} seconds={seconds} moneyOwed={owed} creditScore={750}></CreditScore>
           <Col >
             <h1> Money You Need To Pay Back: ${owed} </h1>
@@ -168,4 +173,4 @@ const Food = (props) => {
   );
 }
 
-export default Food;
+export default Home;
