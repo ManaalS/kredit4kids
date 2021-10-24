@@ -2,7 +2,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap'
-import { CircularProgress, CircularProgressLabel, useDisclosure } from "@chakra-ui/react"
+import { CircularProgress, CircularProgressLabel } from "@chakra-ui/react"
 import '.././index.css'
 
 

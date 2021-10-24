@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Timer from "./Timer";
 import Logout from "./Auth/Logout";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row, Col, Alert } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import CreditScore from "./CreditScore";
 import { Button } from "@chakra-ui/react";
 import ".././index.css";
@@ -31,7 +30,6 @@ import { over, update } from "lodash";
 const Home = (props) => {
   const [minutes, setMinutes] = useState(null);
   const [seconds, setSeconds] = useState(null);
-  const [timerColor, setTimerColor] = useState("white");
   const [owed, setOwed] = useState(props.moneyOwed);
   const [leftToBorrow, borrow] = useState(props.leftToBorrow);
   const [owned, updateMoney] = useState(props.moneyYouHave);
@@ -41,7 +39,6 @@ const Home = (props) => {
   const [countOverdue, setOverdue] = useState(0);
   const [creditScore, setCreditScore] = useState(850);
   const [petStatus, setPetStatus] = useState("Hungry");
-  const [interrupt, setInterrupt] = useState(false);
   const [payments, completePayment] = useState([]);
   const [isOverdue, makeOverdue] = useState("");
 
@@ -84,7 +81,7 @@ const Home = (props) => {
       completePayment([...payments, 0]);
     } else {
       let remaining = owned - price;
-      if((minutes ==null || minutes ==0) && (seconds == null || seconds == 0)) {
+      if((minutes === null || minutes ===0) && (seconds === null || seconds === 0)) {
         setMinutes(1);
         setSeconds(0);
       }
@@ -125,15 +122,11 @@ const Home = (props) => {
   });
   useEffect(() => {
     if (owned >= paymentAmount) {
-      console.log("owed is", owed);
       updateMoney(owned - paymentAmount);
       setPaymentAmount(0);
-      if (owed == 0) {
+      if (owed === 0) {
         resetTimer();
-        console.log("owed is 0");
-        console.log("overdue is", countOverdue);
         completePayment([...payments, countOverdue]);
-        console.log(payments);
         makeOverdue("");
         setOverdue(0);
       }
@@ -149,9 +142,9 @@ const Home = (props) => {
     }
     let average = sum / payments.length;
     console.log("average", average);
-    var paymentHist = 400 - average * 10;
+    var paymentHist = 425 - average * 10;
     var oweWeight = 250 - owed;
-    var playWeight = 150;
+    var playWeight = 175;
     setCreditScore(Math.floor(paymentHist + oweWeight + playWeight));
   }, [payments]);
 
@@ -166,8 +159,7 @@ const Home = (props) => {
   });
   useEffect(() => {
     let interval = setInterval(() => {
-      console.log("interrupt", interrupt, "owed", owed);
-      if (owed == 0) {
+      if (owed === 0) {
         clearInterval(interval);
         borrow(props.leftToBorrow);
         setMinutes(null);
@@ -182,7 +174,7 @@ const Home = (props) => {
           if (owed > 0) {
             makeOverdue("OVERDUE");
             setOverdue(countOverdue + 1);
-            if (countOverdue > 20 && countOverdue % 3 == 0) {
+            if (countOverdue > 20 && countOverdue % 3 === 0) {
               setCreditScore(creditScore - 1);
             }
           } else {

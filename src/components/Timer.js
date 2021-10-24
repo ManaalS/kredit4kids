@@ -15,7 +15,7 @@ function Timer(props) {
             if (seconds > 0) {
                 setSeconds(seconds - 1);
             }
-            if (minutes == 0) {
+            if (minutes === 0) {
               setTimerColor("red")
             } else {
               setTimerColor("white")
