@@ -38,7 +38,13 @@ const Home = (props) => {
   const [owned, updateMoney] = useState(props.moneyYouHave);
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [paymentAmount, setPaymentAmount] = useState(0)
+  const [textMessage, setTextMessage] = useState("Your child has been tasked to do a random act of kindness!")
 
+
+  function sendText () {
+    fetch(`http://127.0.0.1:4000/send-text?recipient=${'+14088059149'}&textmessage=${textMessage}`)
+    .catch(err => console.error(err))
+  }
   function resetTimer() {
     setMinutes(0)
     setSeconds(0)
@@ -97,15 +103,15 @@ const Home = (props) => {
     });
   return (
     <div>
-      <Container className="title">
-      <h1> Kredible </h1>
+      <Container fluid className="title">
+      <h1> Kredible: Credit scores for kids! </h1>
       </Container>
-      <Container id="food">
+      <Container className = "spacing-top" fluid id="food">
         <Row>
           <Col>
             <Row className="spacing">
               <Col>
-                <h1> Buy Food!</h1>
+                <h1> Buy Food To Feed Your Cat</h1>
                 <p>Money you can borrow: ${leftToBorrow}</p>
               </Col>
             </Row>
@@ -124,7 +130,7 @@ const Home = (props) => {
           </Col>
           <Col>
             <Col>
-              <h1> Earn Money!</h1>
+              <h1> Earn Money To Pay Off Your Credit Debit</h1>
               <p>Money you have: ${owned}</p>
               <Row className="spacing">
                 <Button colorScheme="blue" onClick={() => earnMoney(15)}><p>Perform a random act of kindness</p></Button>
@@ -133,7 +139,7 @@ const Home = (props) => {
           </Col>
         </Row>
         </Container>
-        <Container className="credit-score">
+        <Container fluid className="credit-score">
         <Row>
           <CreditScore minutes={minutes} seconds={seconds} moneyOwed={owed} creditScore={750}></CreditScore>
           <Col>

@@ -48,5 +48,11 @@ code {
 .buttonSpacing {
   padding-right: 30px;
 }
+.spacing-bottom {
+  padding-bottom: 80px;
+}
+.spacing-top {
+  padding-top: 80px;
+}
 
 
