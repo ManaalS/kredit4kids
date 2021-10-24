@@ -84,8 +84,10 @@ const Home = (props) => {
       completePayment([...payments, 0]);
     } else {
       let remaining = owned - price;
-      setMinutes(1);
-      setSeconds(0);
+      if((minutes ==null || minutes ==0) && (seconds == null || seconds == 0)) {
+        setMinutes(1);
+        setSeconds(0);
+      }
       if (leftToBorrow >= -1 * remaining) {
         borrow(leftToBorrow + remaining);
         setOwed(-1 * remaining + owed);
@@ -251,7 +253,7 @@ const Home = (props) => {
                 </Button>
 
                 <p>
-                  Next payment deadline:
+                  Next payment deadline: <p style={{color: "red"}}>{isOverdue}</p>
                   <Col>
                     <p>
                       Minutes: {minutes} Seconds: {seconds}
