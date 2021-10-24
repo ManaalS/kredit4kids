@@ -23,6 +23,8 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react"
 import { useDisclosure } from "@chakra-ui/react"
+import happyCat from '.././assets/happy-cat.jpg'
+import sadCat from '.././assets/mad-cat.jpg'
 
 
 
@@ -118,7 +120,7 @@ const Home = (props) => {
             </Row>
           </Col>
           <Col>
-            cat
+            <img src={happyCat}></img>
           </Col>
           <Col>
             <Col>
@@ -135,8 +137,8 @@ const Home = (props) => {
         <Row>
           <CreditScore minutes={minutes} seconds={seconds} moneyOwed={owed} creditScore={750}></CreditScore>
           <Col>
-            <h1> Money You Need To Pay Back: ${owed} </h1>
-            <Button onClick={onOpen} colorScheme="green">
+            <span className = "buttonSpacing"> Money You Need To Pay Back: ${owed}</span>
+            <Button  onClick={onOpen} colorScheme="green">
               Pay Card
             </Button>
             <p> Next payment deadline:
