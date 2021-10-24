@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import Timer from "./Timer"
-import Logout from "./Auth/Logout"
+import React, { useState, useEffect } from "react";
+import Timer from "./Timer";
+import Logout from "./Auth/Logout";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Alert } from 'react-bootstrap';
-import CreditScore from './CreditScore';
-import { Button } from "@chakra-ui/react"
-import '.././index.css'
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Container, Row, Col, Alert } from "react-bootstrap";
+import CreditScore from "./CreditScore";
+import { Button } from "@chakra-ui/react";
+import ".././index.css";
 import {
   Slider,
   SliderTrack,
@@ -22,14 +22,11 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from "@chakra-ui/react"
-import { useDisclosure } from "@chakra-ui/react"
-import happyCat from '.././assets/happy-cat.png'
-import sadCat from '.././assets/sad-cat.png'
+} from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
+import happyCat from ".././assets/happy-cat.png";
+import sadCat from ".././assets/sad-cat.png";
 import { over, update } from "lodash";
-
-
-
 
 const Home = (props) => {
   const [minutes, setMinutes] = useState(null);
@@ -44,8 +41,9 @@ const Home = (props) => {
   const [countOverdue, setOverdue] = useState(0);
   const [creditScore, setCreditScore] = useState(850);
   const [petStatus, setPetStatus] = useState("Hungry");
-  const [interrupt, setInterrupt] = useState(false)
-
+  const [interrupt, setInterrupt] = useState(false);
+  const [payments, completePayment] = useState([]);
+  const [isOverdue, makeOverdue] = useState("");
 
   const rak = [
     "Donate $5 to charity",
@@ -57,13 +55,14 @@ const Home = (props) => {
     "Smile at a stranger",
   ];
 
-  var overduePayments = [];
-
-
   function sendText(rak) {
-    let textMessage = "Hello from Kredible: Credit Scores For Kids! Your child has been tasked to " + rak.toLowerCase() + ". Help them do so!"
-    fetch(`http://localhost:4000/send-parent-text?recipient=${''}&textmessage=${textMessage}`)
-      .catch(err => console.error(err))
+    let textMessage =
+      "Hello from Kredible: Credit Scores For Kids! Your child has been tasked to " +
+      rak.toLowerCase() +
+      ". Help them do so!";
+    fetch(
+      `http://localhost:4000/send-parent-text?recipient=${""}&textmessage=${textMessage}`
+    ).catch((err) => console.error(err));
   }
   function resetTimer() {
     setMinutes(null);
@@ -72,30 +71,17 @@ const Home = (props) => {
 
   function submitPayment() {
     if (owned < paymentAmount) {
-      setPaymentAmount(0)
-      setOwed(owed - owned)
-      updateMoney(0)
-      setMinutes(minutes + 1)
+      setPaymentAmount(0);
+      setOwed(owed - owned);
+      updateMoney(0);
     }
     setOwed(owed - paymentAmount);
-    if (owned >= paymentAmount) {
-      updateMoney(owned - paymentAmount)
-      setPaymentAmount(0);
-      if (owed == 0) {
-        setInterrupt(true)
-        overduePayments += countOverdue;
-        console.log(overduePayments)
-        setOverdue(0)
-      } else {
-        setInterrupt(false)
-      }
-    }
-    onClose();
   }
 
   function buyItem(price) {
     if (owned >= price) {
       updateMoney(owned - price);
+      completePayment([...payments, 0]);
     } else {
       let remaining = owned - price;
       setMinutes(1);
@@ -107,16 +93,14 @@ const Home = (props) => {
         console.log("in statement");
       }
     }
-    setPetStatus("Full")
+    setPetStatus("Full");
   }
 
   function Pet() {
     if (petStatus === "Hungry") {
-      return (<img src={sadCat}></img>)
+      return <img src={sadCat}></img>;
     } else {
-      return (
-        <img src={happyCat}></img>
-      )
+      return <img src={happyCat}></img>;
     }
   }
 
@@ -127,11 +111,52 @@ const Home = (props) => {
     var randRAK = Math.floor(Math.random() * rak.length);
     sendText(rak[randRAK]);
     setRak(rak[randRAK]);
-  }
+  };
   useEffect(() => {
     let interval = setInterval(() => {
-      setPetStatus("Hungry")
-      console.log("SET IT")
+      setPetStatus("Hungry");
+      console.log("SET IT");
+    }, 5000);
+    return () => {
+      clearInterval(interval);
+    };
+  });
+  useEffect(() => {
+    if (owned >= paymentAmount) {
+      console.log("owed is", owed);
+      updateMoney(owned - paymentAmount);
+      setPaymentAmount(0);
+      if (owed == 0) {
+        resetTimer();
+        console.log("owed is 0");
+        console.log("overdue is", countOverdue);
+        completePayment([...payments, countOverdue]);
+        console.log(payments);
+        makeOverdue("");
+        setOverdue(0);
+      }
+    }
+
+    onClose();
+  }, [owed]);
+  useEffect(() => {
+    console.log(payments);
+    let sum = 0;
+    for (let i = 0; i < payments.length; i++) {
+      sum += payments[i];
+    }
+    let average = sum / payments.length;
+    console.log("average", average);
+    var paymentHist = 400 - average * 10;
+    var oweWeight = 250 - owed;
+    var playWeight = 150;
+    setCreditScore(Math.floor(paymentHist + oweWeight + playWeight));
+  }, [payments]);
+
+  useEffect(() => {
+    let interval = setInterval(() => {
+      setPetStatus("Hungry");
+      console.log("SET IT");
     }, 5000);
     return () => {
       clearInterval(interval);
@@ -139,13 +164,13 @@ const Home = (props) => {
   });
   useEffect(() => {
     let interval = setInterval(() => {
-      console.log("interrupt", interrupt, "owed", owed)
+      console.log("interrupt", interrupt, "owed", owed);
       if (owed == 0) {
-        clearInterval(interval)
+        clearInterval(interval);
         borrow(props.leftToBorrow);
-        setMinutes(null)
-        setSeconds(null)
-        return
+        setMinutes(null);
+        setSeconds(null);
+        return;
       }
       if (seconds > 0) {
         setSeconds(seconds - 1);
@@ -153,17 +178,15 @@ const Home = (props) => {
       if (seconds === 0) {
         if (minutes === 0) {
           if (owed > 0) {
+            makeOverdue("OVERDUE");
             setOverdue(countOverdue + 1);
-            console.log(countOverdue);
-          }
-          else {
-            overduePayments += countOverdue;
-            setOverdue(0);
+            if (countOverdue > 20 && countOverdue % 3 == 0) {
+              setCreditScore(creditScore - 1);
+            }
+          } else {
             clearInterval(interval);
-            console.log(overduePayments)
           }
         } else {
-          console.log(overduePayments)
           setMinutes(minutes - 1);
           setSeconds(59);
         }
@@ -217,18 +240,22 @@ const Home = (props) => {
           </Col>
           <Col>
             <Row className="credit-score">
-              <CreditScore
-                creditScore={creditScore}
-              ></CreditScore>
+              <CreditScore creditScore={creditScore}></CreditScore>
               <Col>
-                <span className="buttonSpacing"> Money You Need To Pay Back: ${owed}</span>
+                <span className="buttonSpacing">
+                  {" "}
+                  Money You Need To Pay Back: ${owed}
+                </span>
                 <Button onClick={onOpen} colorScheme="green">
                   Pay Card
-            </Button>
+                </Button>
 
-                <p>Next payment deadline:
-          <Col>
-                    <p>Minutes: {minutes} Seconds: {seconds}</p>
+                <p>
+                  Next payment deadline:
+                  <Col>
+                    <p>
+                      Minutes: {minutes} Seconds: {seconds}
+                    </p>
                   </Col>
                 </p>
                 <Modal onClose={onClose} isOpen={isOpen} isCentered>
@@ -270,7 +297,9 @@ const Home = (props) => {
             </Row>
           </Col>
         </Row>
-        <a href="https://www.freepik.com/vectors/character">Character vector created by jcomp - www.freepik.com</a>
+        <a href="https://www.freepik.com/vectors/character">
+          Character vector created by jcomp - www.freepik.com
+        </a>
       </Container>
     </div>
   );
@@ -278,17 +307,22 @@ const Home = (props) => {
 
 export default Home;
 
-const CustomModal = ({ showModalButtonText, modalHeader, modalBody, genRak, earnMoney }) => {
+const CustomModal = ({
+  showModalButtonText,
+  modalHeader,
+  modalBody,
+  genRak,
+  earnMoney,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const openRAK = () => {
     genRak();
     onOpen();
-
   };
   const completeRAK = () => {
     earnMoney();
     onClose();
-  }
+  };
   return (
     <div>
       <Row className="spacing">
@@ -311,8 +345,6 @@ const CustomModal = ({ showModalButtonText, modalHeader, modalBody, genRak, earn
             <Button colorScheme="green" mr={3} onClick={completeRAK}>
               I did it!
             </Button>
-
-
           </ModalFooter>
         </ModalContent>
       </Modal>
