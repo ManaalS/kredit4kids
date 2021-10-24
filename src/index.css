@@ -35,6 +35,16 @@ code {
 }
 .spacing {
   padding:10px;
+  justify-content: center !important;
+}
+
+.controls {
+  text-align: center;
+  font-family: 'Patrick Hand SC', cursive;
+  color: white;
+  font-size: 50px;
+  padding-bottom: 30px;
+  padding-top: 30px;
 }
 
 .title {
@@ -43,7 +53,20 @@ code {
   font-family: 'Patrick Hand SC', cursive;
   color: white;
   font-size: 50px;
+  padding-bottom: 30px;
+  padding-top: 30px;
 }
+
+.title2 {
+  background-color: #324DAE;
+  text-align: center;
+  font-family: 'Patrick Hand SC', cursive;
+  color: white;
+  font-size: 30px;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
 
 .buttonSpacing {
   padding-right: 30px;
@@ -52,7 +75,7 @@ code {
   padding-bottom: 80px;
 }
 .spacing-top {
-  padding-top: 80px;
+  padding-top: 0px;
 }
 
 

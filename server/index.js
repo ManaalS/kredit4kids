@@ -10,6 +10,9 @@ const client = new twilio(accountSid, authToken);
 const app = express();
 
 app.use(cors());
+app.get('/', (req, res) => {
+    res.send("You're in!")
+})
 app.get('/send-parent-text', (req, res) => {
     res.send('Sent to parent')
 
@@ -17,7 +20,7 @@ app.get('/send-parent-text', (req, res) => {
 
     client.messages.create({
         body: textmessage,
-        to: '+14088059149',
+        to: '+1',
         from: '+14086874416' 
     }).then((message) => console.log(message.body));
 })

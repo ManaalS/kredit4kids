@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import Timer from "./Timer"
+import React, { useState, useEffect } from "react";
+import Timer from "./Timer";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Alert } from 'react-bootstrap';
-import CreditScore from './CreditScore';
-import { Button } from "@chakra-ui/react"
-import '.././index.css'
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Container, Row, Col, Alert } from "react-bootstrap";
+import CreditScore from "./CreditScore";
+import { Button } from "@chakra-ui/react";
+import ".././index.css";
 import {
   Slider,
   SliderTrack,
   SliderFilledTrack,
   SliderThumb,
-} from "@chakra-ui/react"
-import { Box } from "@chakra-ui/react"
+} from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import {
   Modal,
   ModalOverlay,
@@ -23,139 +23,227 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react"
 import { useDisclosure } from "@chakra-ui/react"
-import happyCat from '.././assets/happy-cat.jpg'
-import sadCat from '.././assets/mad-cat.jpg'
+import happyCat from '.././assets/happy-cat.png'
+import sadCat from '.././assets/sad-cat.png'
+import { over, update } from "lodash";
 
 
 
 
 const Home = (props) => {
-  const [minutes, setMinutes ] = useState(0);
-  const [seconds, setSeconds ] =  useState(0);
-  const [timerColor, setTimerColor] = useState("white")
+  const [minutes, setMinutes] = useState(null);
+  const [seconds, setSeconds] = useState(null);
+  const [timerColor, setTimerColor] = useState("white");
   const [owed, setOwed] = useState(props.moneyOwed);
   const [leftToBorrow, borrow] = useState(props.leftToBorrow);
   const [owned, updateMoney] = useState(props.moneyYouHave);
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const [paymentAmount, setPaymentAmount] = useState(0)
-  const [textMessage, setTextMessage] = useState("Your child has been tasked to do a random act of kindness!")
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [kindAct, setRak] = useState("");
+  const [paymentAmount, setPaymentAmount] = useState(0);
+  const [countOverdue, setOverdue] = useState(0);
+  const [creditScore, setCreditScore] = useState(850);
+  const [petStatus, setPetStatus] = useState("Hungry");
+  const [interrupt, setInterrupt] = useState(false)
+
+  
+  const rak = [
+    "Donate $5 to charity",
+    "Compliment a friend",
+    "Help your parents with the household tasks",
+    "Give a high five to a friend",
+    "Pick up litter",
+    "Give someone a gift",
+    "Smile at a stranger",
+  ];
+
+  var overduePayments = [];
 
 
-  function sendText () {
-    fetch(`http://127.0.0.1:4000/send-text?recipient=${'+14088059149'}&textmessage=${textMessage}`)
+  function sendText (rak) {
+    let textMessage = "Hello from Kredible: Credit Scores For Kids! Your child has been tasked to " + rak.toLowerCase() + ". Help them do so!"
+    fetch(`http://localhost:4000/send-parent-text?recipient=${''}&textmessage=${textMessage}`)
     .catch(err => console.error(err))
   }
   function resetTimer() {
-    setMinutes(0)
-    setSeconds(0)
+    setMinutes(null);
+    setSeconds(0);
   }
 
   function submitPayment() {
-    setOwed(owed - paymentAmount)
-    setPaymentAmount(0)
-    resetTimer()
-    onClose()
+    if(owned<paymentAmount) {
+      setPaymentAmount(0)
+      setOwed(owed - owned)
+      updateMoney(0)
+      setMinutes(minutes + 1)
+    }
+    setOwed(owed - paymentAmount);
+    if(owned>=paymentAmount) {
+      updateMoney(owned - paymentAmount)
+      setPaymentAmount(0);
+      if(owed == 0) {
+        setInterrupt(true)
+        overduePayments+=countOverdue;
+        console.log(overduePayments)
+        setOverdue(0)
+      } else {
+        setInterrupt(false)
+      }
+    }
+    onClose();
   }
-
 
   function buyItem(price) {
     if (owned >= price) {
       updateMoney(owned - price);
-    }
-    else {
+    } else {
       let remaining = owned - price;
-      setMinutes(1)
+      setMinutes(1);
+      setSeconds(0);
       if (leftToBorrow >= -1 * remaining) {
-        borrow(leftToBorrow + remaining)
-        setOwed(-1 * remaining + owed)
-      }
-      else {
+        borrow(leftToBorrow + remaining);
+        setOwed(-1 * remaining + owed);
+      } else {
         console.log("in statement");
       }
+    }
+    setPetStatus("Full")
+  }
+
+  function Pet() {
+    if (petStatus === "Hungry") {
+      return (<img src={sadCat}></img>)
+    } else {
+      return (
+        <img src={happyCat}></img>
+      )
     }
   }
 
   function earnMoney() {
-    updateMoney(owned + 5)
+    updateMoney(owned + 5);
   }
-  useEffect(()=>{
+  const genRak=()=> {
+    var randRAK = Math.floor(Math.random() * rak.length);
+    sendText(rak[randRAK]);
+    setRak(rak[randRAK]);
+  }
+  useEffect(() => {
     let interval = setInterval(() => {
-            if (seconds > 0) {
-                setSeconds(seconds - 1);
-            }
-            if (minutes == 0) {
-              setTimerColor("red")
-            } else {
-              setTimerColor("white")
-            }
-            if (seconds === 0) {
-                if (minutes === 0) {
-                    clearInterval(interval)
-                } else {
-                    setMinutes(minutes - 1);
-                    setSeconds(59);
-                }
-            } 
-        }, 1000)
-        return () => {
+      setPetStatus("Hungry")
+      console.log("SET IT")
+    }, 5000);
+    return () => {
+      clearInterval(interval);
+    };
+  });
+  useEffect(() => {
+    let interval = setInterval(() => {
+      console.log("interrupt", interrupt, "owed", owed)
+      if (owed == 0) {
+        clearInterval(interval)
+        borrow(props.leftToBorrow);
+        setMinutes(null)
+        setSeconds(null)
+        return
+      }
+      if (seconds > 0) {
+        setSeconds(seconds - 1);
+      }
+      if (seconds === 0) {
+        if (minutes === 0) {
+          if(owed>0) {
+            setOverdue(countOverdue + 1);
+            console.log(countOverdue);
+          }
+          else {
+            overduePayments += countOverdue;
+            setOverdue(0);
             clearInterval(interval);
-        };
-    });
+            console.log(overduePayments)
+          }
+        } else {
+          console.log(overduePayments)
+          setMinutes(minutes - 1);
+          setSeconds(59);
+        }
+      }
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  });
   return (
     <div>
       <Container fluid className="title">
       <h1> Kredible: Credit scores for kids! </h1>
       </Container>
-      <Container className = "spacing-top" fluid id="food">
-        <Row>
+      <Container className = "controls" fluid id="food">
+        <Row className="spacing">
           <Col>
             <Row className="spacing">
               <Col>
-                <h1> Buy Food To Feed Your Cat</h1>
-                <p>Money you can borrow: ${leftToBorrow}</p>
+                <h1 className="title2">Buy Food</h1>
+                <p>money you can borrow: ${leftToBorrow}</p>
               </Col>
             </Row>
             <Row className="spacing">
-              <Button colorScheme="blue" onClick={() => buyItem(5)}><p>Buy an apple ($5)</p></Button>
+              <Button colorScheme="orange" onClick={() => buyItem(5)}>
+                <p>Buy an apple (-$5)</p>
+              </Button>
             </Row>
             <Row className="spacing">
-              <Button colorScheme="blue" onClick={() => buyItem(10)}><p>Buy a fish ($10)</p></Button>
+              <Button colorScheme="blue" onClick={() => buyItem(10)}>
+                <p>Buy a Fish (-$10)</p>
+              </Button>
             </Row>
             <Row className="spacing">
-              <Button colorScheme="blue" onClick={() => buyItem(15)}><p>Buy a mango ($15)</p></Button>
+              <Button colorScheme="yellow" onClick={() => buyItem(15)}>
+                <p>Buy a mango (-$15)</p>
+              </Button>
             </Row>
+            <Row className="spacing">
+              <h1 className="title2">Earn Money</h1>
+              <p>money you have: ${owned}</p>
+              <CustomModal
+                showModalButtonText="Do a random act of kindness (+$5)"
+                modalHeader="Do this act of kindness!"
+                modalBody={kindAct}
+                genRak={()=>genRak()}
+                earnMoney={()=>earnMoney()}
+              />
+          </Row>
           </Col>
           <Col>
-            <img src={happyCat}></img>
-          </Col>
-          <Col>
-            <Col>
-              <h1> Earn Money To Pay Off Your Credit Debit</h1>
-              <p>Money you have: ${owned}</p>
-              <Row className="spacing">
-                <Button colorScheme="blue" onClick={() => earnMoney(15)}><p>Perform a random act of kindness</p></Button>
-              </Row>
-            </Col>
-          </Col>
-        </Row>
-        </Container>
-        <Container fluid className="credit-score">
-        <Row>
-          <CreditScore minutes={minutes} seconds={seconds} moneyOwed={owed} creditScore={750}></CreditScore>
+        <Row className="credit-score"> 
+          <CreditScore
+            creditScore={creditScore}
+          ></CreditScore>
           <Col>
             <span className = "buttonSpacing"> Money You Need To Pay Back: ${owed}</span>
             <Button  onClick={onOpen} colorScheme="green">
               Pay Card
             </Button>
-            <p> Next payment deadline:
-            Minutes: {minutes} Seconds: {seconds} </p>
+            
+            <p>Next payment deadline:
+          <Col>
+            <p>Minutes: {minutes} Seconds: {seconds}</p>
+          </Col>
+          </p>
             <Modal onClose={onClose} isOpen={isOpen} isCentered>
               <ModalOverlay />
               <ModalContent className="credit-score">
                 <ModalHeader>How much do you want to pay?</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                  <Slider onChange={(value) => { setPaymentAmount(value) }} defaultValue={0} min={0} max={owned} step={1}>
+                  <Slider
+                    onChange={(value) => {
+                      setPaymentAmount(value);
+                    }}
+                    defaultValue={0}
+                    min={0}
+                    max={Math.min(owed, owned)}
+                    step={1}
+                  >
                     <SliderTrack bg="blue.100">
                       <Box position="relative" right={10} />
                       <SliderFilledTrack bg="blue" />
@@ -171,10 +259,61 @@ const Home = (props) => {
             </Modal>
           </Col>
         </Row>
-      </Container>
-
+          </Col>
+          <Col>
+          <Row className="spacing">
+              <h1 className="title2">Your Pet</h1>
+              <p>your pet is: {petStatus}</p>
+              <Pet/>
+          </Row>
+          </Col>
+        </Row>
+        <a href="https://www.freepik.com/vectors/character">Character vector created by jcomp - www.freepik.com</a>
+        </Container>
     </div>
   );
-}
+};
 
 export default Home;
+
+const CustomModal = ({ showModalButtonText, modalHeader, modalBody, genRak, earnMoney }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const openRAK = () => {
+    genRak();
+    onOpen();
+  
+  };
+  const completeRAK = () => {
+    earnMoney();
+    onClose();
+  }
+  return (
+    <>
+      <Row className="spacing">
+        <Button colorScheme="green" onClick={()=>openRAK()}>
+          {showModalButtonText}
+        </Button>
+      </Row>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{modalHeader}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>{modalBody}</ModalBody>
+
+          <ModalFooter>
+          <Button variant="ghost" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button colorScheme="green" mr={3} onClick={completeRAK}>
+              I did it!
+            </Button>
+
+
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
