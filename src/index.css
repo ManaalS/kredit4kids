@@ -47,6 +47,41 @@ code {
   padding-top: 30px;
 }
 
+.auth {
+  font-family: 'Patrick Hand SC', cursive;
+  color: black;
+  font-size: 16px;
+}
+
+.auth-title {
+  background-color: white;
+  color: black;
+  font-size: 30px;
+}
+
+.auth-button {
+  margin-top: 20px;
+}
+
+.logout .btn-link {
+  color: white;
+  font-size: 30px;
+  display:flex; 
+  justify-content:flex-end; 
+  align-items:center; 
+  text-decoration: none; 
+}
+
+.logout .btn-link:hover {
+  color: grey;
+}
+ 
+.form-group {
+  display: inline-block;
+  margin-top: 50px;
+  
+}
+
 .title {
   background-color: #324DAE;
   text-align: center;
