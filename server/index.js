@@ -3,8 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const twilio = require('twilio'); 
 
-const accountSid = 'AC1e62b18eae5b053283fadc24432cb329';
-const authToken = '8ca64283e72f74ca6c226a32222b9fa6'; 
+const accountSid = '';
+const authToken = ''; 
 const client = new twilio(accountSid, authToken);
 
 const app = express();
@@ -20,8 +20,8 @@ app.get('/send-parent-text', (req, res) => {
 
     client.messages.create({
         body: textmessage,
-        to: '+1',
-        from: '+14086874416' 
+        to: '',
+        from: '' 
     }).then((message) => console.log(message.body));
 })
 
