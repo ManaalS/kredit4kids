@@ -84,7 +84,7 @@ const Home = (props) => {
       completePayment([...payments, 0]);
     } else {
       let remaining = owned - price;
-      if((minutes ==null || minutes ==0) && (seconds == null || seconds == 0)) {
+      if ((minutes == null || minutes == 0) && (seconds == null || seconds == 0)) {
         setMinutes(1);
         setSeconds(0);
       }
@@ -201,8 +201,14 @@ const Home = (props) => {
   return (
     <div>
       <Container fluid className="title">
-        <h1> Kredible: Credit scores for kids! </h1>
-        <Logout />
+        <Row>
+          <Col md={{ span: 7, offset: 1 }}>
+            <h1> Kredible: Credit scores for kids! </h1>
+          </Col>
+          <Col md={{ span: 2, offset: 2 }}>
+            <Logout />
+          </Col>
+        </Row>
       </Container>
       <Container className="controls" fluid id="food">
         <Row className="spacing">
@@ -253,7 +259,7 @@ const Home = (props) => {
                 </Button>
 
                 <p>
-                  Next payment deadline: <p style={{color: "red"}}>{isOverdue}</p>
+                  Next payment deadline: <p style={{ color: "red" }}>{isOverdue}</p>
                   <Col>
                     <p>
                       Minutes: {minutes} Seconds: {seconds}
