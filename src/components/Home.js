@@ -21,13 +21,18 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from "@chakra-ui/react";
-import { useDisclosure } from "@chakra-ui/react";
+} from "@chakra-ui/react"
+import { useDisclosure } from "@chakra-ui/react"
+import happyCat from '.././assets/happy-cat.png'
+import sadCat from '.././assets/sad-cat.png'
 import { over, update } from "lodash";
 
+
+
+
 const Home = (props) => {
-  const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState(null);
+  const [seconds, setSeconds] = useState(null);
   const [timerColor, setTimerColor] = useState("white");
   const [owed, setOwed] = useState(props.moneyOwed);
   const [leftToBorrow, borrow] = useState(props.leftToBorrow);
@@ -37,12 +42,15 @@ const Home = (props) => {
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [countOverdue, setOverdue] = useState(0);
   const [creditScore, setCreditScore] = useState(850);
+  const [petStatus, setPetStatus] = useState("Hungry");
+  const [interrupt, setInterrupt] = useState(false)
+
   
   const rak = [
     "Donate $5 to charity",
     "Compliment a friend",
     "Help your parents with the household tasks",
-    "Mow someone's lawn",
+    "Give a high five to a friend",
     "Pick up litter",
     "Give someone a gift",
     "Smile at a stranger",
@@ -50,8 +58,14 @@ const Home = (props) => {
 
   var overduePayments = [];
 
+
+  function sendText (rak) {
+    let textMessage = "Hello from Kredible: Credit Scores For Kids! Your child has been tasked to " + rak.toLowerCase() + ". Help them do so!"
+    fetch(`http://localhost:4000/send-parent-text?recipient=${''}&textmessage=${textMessage}`)
+    .catch(err => console.error(err))
+  }
   function resetTimer() {
-    setMinutes(0);
+    setMinutes(null);
     setSeconds(0);
   }
 
@@ -60,16 +74,19 @@ const Home = (props) => {
       setPaymentAmount(0)
       setOwed(owed - owned)
       updateMoney(0)
+      setMinutes(minutes + 1)
     }
     setOwed(owed - paymentAmount);
     if(owned>=paymentAmount) {
       updateMoney(owned - paymentAmount)
       setPaymentAmount(0);
       if(owed == 0) {
-        resetTimer();
+        setInterrupt(true)
         overduePayments+=countOverdue;
         console.log(overduePayments)
         setOverdue(0)
+      } else {
+        setInterrupt(false)
       }
     }
     onClose();
@@ -81,12 +98,24 @@ const Home = (props) => {
     } else {
       let remaining = owned - price;
       setMinutes(1);
+      setSeconds(0);
       if (leftToBorrow >= -1 * remaining) {
         borrow(leftToBorrow + remaining);
         setOwed(-1 * remaining + owed);
       } else {
         console.log("in statement");
       }
+    }
+    setPetStatus("Full")
+  }
+
+  function Pet() {
+    if (petStatus === "Hungry") {
+      return (<img src={sadCat}></img>)
+    } else {
+      return (
+        <img src={happyCat}></img>
+      )
     }
   }
 
@@ -95,18 +124,30 @@ const Home = (props) => {
   }
   const genRak=()=> {
     var randRAK = Math.floor(Math.random() * rak.length);
-    //do the twilio thing
+    sendText(rak[randRAK]);
     setRak(rak[randRAK]);
   }
   useEffect(() => {
     let interval = setInterval(() => {
+      setPetStatus("Hungry")
+      console.log("SET IT")
+    }, 5000);
+    return () => {
+      clearInterval(interval);
+    };
+  });
+  useEffect(() => {
+    let interval = setInterval(() => {
+      console.log("interrupt", interrupt, "owed", owed)
+      if (owed == 0) {
+        clearInterval(interval)
+        borrow(props.leftToBorrow);
+        setMinutes(null)
+        setSeconds(null)
+        return
+      }
       if (seconds > 0) {
         setSeconds(seconds - 1);
-      }
-      if (minutes == 0) {
-        setTimerColor("red");
-      } else {
-        setTimerColor("white");
       }
       if (seconds === 0) {
         if (minutes === 0) {
@@ -133,60 +174,61 @@ const Home = (props) => {
   });
   return (
     <div>
-      <Container className="title">
-        <h1> Kredible </h1>
+      <Container fluid className="title">
+      <h1> Kredible: Credit scores for kids! </h1>
       </Container>
-      <Container id="food">
-        <Row>
+      <Container className = "controls" fluid id="food">
+        <Row className="spacing">
           <Col>
             <Row className="spacing">
               <Col>
-                <h1>Buy Food!</h1>
-                <p>Money you can borrow: ${leftToBorrow}</p>
+                <h1 className="title2">Buy Food</h1>
+                <p>money you can borrow: ${leftToBorrow}</p>
               </Col>
             </Row>
             <Row className="spacing">
-              <Button colorScheme="blue" onClick={() => buyItem(5)}>
-                <p>Buy an apple ($5)</p>
+              <Button colorScheme="orange" onClick={() => buyItem(5)}>
+                <p>Buy an apple (-$5)</p>
               </Button>
             </Row>
             <Row className="spacing">
               <Button colorScheme="blue" onClick={() => buyItem(10)}>
-                <p>Buy a fish ($10)</p>
+                <p>Buy a Fish (-$10)</p>
               </Button>
             </Row>
             <Row className="spacing">
-              <Button colorScheme="blue" onClick={() => buyItem(15)}>
-                <p>Buy a mango ($15)</p>
+              <Button colorScheme="yellow" onClick={() => buyItem(15)}>
+                <p>Buy a mango (-$15)</p>
               </Button>
             </Row>
-          </Col>
-          <Col>cat</Col>
-          <Col>
-            <Col>
-              <h1>Earn Money!</h1>
+            <Row className="spacing">
+              <h1 className="title2">Earn Money</h1>
+              <p>money you have: ${owned}</p>
               <CustomModal
-                showModalButtonText="Do a random act of kindness"
+                showModalButtonText="Do a random act of kindness (+$5)"
                 modalHeader="Do this act of kindness!"
                 modalBody={kindAct}
                 genRak={()=>genRak()}
                 earnMoney={()=>earnMoney()}
               />
-              <p>Money you have: ${owned}</p>
-            </Col>
+          </Row>
           </Col>
-        </Row>
-      </Container>
-      <Container className="credit-score">
-        <Row>
+          <Col>
+        <Row className="credit-score"> 
           <CreditScore
             creditScore={creditScore}
           ></CreditScore>
           <Col>
-            <h1> Money You Need To Pay Back: ${owed} </h1>
-            <Button onClick={onOpen} colorScheme="green">
+            <span className = "buttonSpacing"> Money You Need To Pay Back: ${owed}</span>
+            <Button  onClick={onOpen} colorScheme="green">
               Pay Card
             </Button>
+            
+            <p>Next payment deadline:
+          <Col>
+            <p>Minutes: {minutes} Seconds: {seconds}</p>
+          </Col>
+          </p>
             <Modal onClose={onClose} isOpen={isOpen} isCentered>
               <ModalOverlay />
               <ModalContent className="credit-score">
@@ -199,7 +241,7 @@ const Home = (props) => {
                     }}
                     defaultValue={0}
                     min={0}
-                    max={owned}
+                    max={Math.min(owed, owned)}
                     step={1}
                   >
                     <SliderTrack bg="blue.100">
@@ -217,13 +259,17 @@ const Home = (props) => {
             </Modal>
           </Col>
         </Row>
-        <Row>
-          Next payment deadline:
+          </Col>
           <Col>
-            Minutes: {minutes} Seconds: {seconds}
+          <Row className="spacing">
+              <h1 className="title2">Your Pet</h1>
+              <p>your pet is: {petStatus}</p>
+              <Pet/>
+          </Row>
           </Col>
         </Row>
-      </Container>
+        <a href="https://www.freepik.com/vectors/character">Character vector created by jcomp - www.freepik.com</a>
+        </Container>
     </div>
   );
 };
