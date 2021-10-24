@@ -6,7 +6,7 @@ import { useAuth } from "../../contexts/AuthContext"
 // import "bootstrap/dist/css/bootstrap.min.css";
 
 const Logout = () => {
-    const { user, logout } = useAuth();
+    const { logout } = useAuth();
     const history = useHistory();
 
     const handleLogout = async () => {

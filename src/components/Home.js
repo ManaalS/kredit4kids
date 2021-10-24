@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Logout from "./Auth/Logout";
-
+/* eslint-disable */
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col } from "react-bootstrap";
 import CreditScore from "./CreditScore";
@@ -25,7 +25,6 @@ import {
 import { useDisclosure } from "@chakra-ui/react";
 import happyCat from ".././assets/happy-cat.png";
 import sadCat from ".././assets/sad-cat.png";
-import { over, update } from "lodash";
 
 const Home = (props) => {
   const [minutes, setMinutes] = useState(null);
@@ -97,9 +96,9 @@ const Home = (props) => {
 
   function Pet() {
     if (petStatus === "Hungry") {
-      return <img src={sadCat}></img>;
+      return <img alt="sadcat" src={sadCat}></img>;
     } else {
-      return <img src={happyCat}></img>;
+      return <img alt="happycat" src={happyCat}></img>;
     }
   }
 
