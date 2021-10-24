@@ -193,8 +193,14 @@ const Home = (props) => {
   return (
     <div>
       <Container fluid className="title">
-        <h1> Kredible: Credit scores for kids! </h1>
-        <Logout />
+        <Row>
+          <Col md={{ span: 7, offset: 1 }}>
+            <h1> Kredible: Credit scores for kids! </h1>
+          </Col>
+          <Col md={{ span: 2, offset: 2 }}>
+            <Logout />
+          </Col>
+        </Row>
       </Container>
       <Container className="controls" fluid id="food">
         <Row className="spacing">
@@ -245,7 +251,7 @@ const Home = (props) => {
                 </Button>
 
                 <p>
-                  Next payment deadline: <p style={{color: "red"}}>{isOverdue}</p>
+                  Next payment deadline: <p style={{ color: "red" }}>{isOverdue}</p>
                   <Col>
                     <p>
                       Minutes: {minutes} Seconds: {seconds}

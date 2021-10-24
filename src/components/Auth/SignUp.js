@@ -38,10 +38,10 @@ const SignUp = () => {
                 className="d-flex align-items-center justify-content-center"
                 style={{ minHeight: "100vh" }}
             >
-                <div className="w-100" style={{ maxWidth: "400px" }}>
+                <div className="w-100 auth" style={{ maxWidth: "400px" }}>
                     <Card>
                         <Card.Body>
-                            <h2 className="text-center mb-4">Sign Up</h2>
+                            <h2 className="text-center mb-4 auth-title">Kredible</h2>
                             {error && <Alert variant="danger">{error}</Alert>}
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group id="username">
@@ -64,7 +64,7 @@ const SignUp = () => {
                                     <Form.Label>Enter the Password Again</Form.Label>
                                     <Form.Control type="password" placeholder="password" ref={passwordConfirmRef} required />
                                 </Form.Group>
-                                <Button disabled={loading} className="w-100" type="submit">
+                                <Button disabled={loading} variant="secondary" className="w-100 auth-button" type="submit">
                                     Sign Up
                                 </Button>
                             </Form>
