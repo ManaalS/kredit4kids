@@ -26,7 +26,7 @@ function CreditScore(props) {
       <Row>
         <Col>
           <h1> Your Credit Score </h1>
-          <CircularProgress size="120px" value={creditScore / 10} color={colorZone}>
+          <CircularProgress size="120px" value={(creditScore / 850)*100} color={colorZone}>
             <CircularProgressLabel>{creditScore}</CircularProgressLabel>
           </CircularProgress>
         </Col>

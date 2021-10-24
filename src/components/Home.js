@@ -134,18 +134,20 @@ const Home = (props) => {
         <Container className="credit-score">
         <Row>
           <CreditScore minutes={minutes} seconds={seconds} moneyOwed={owed} creditScore={750}></CreditScore>
-          <Col >
+          <Col>
             <h1> Money You Need To Pay Back: ${owed} </h1>
             <Button onClick={onOpen} colorScheme="green">
               Pay Card
             </Button>
+            <p> Next payment deadline:
+            Minutes: {minutes} Seconds: {seconds} </p>
             <Modal onClose={onClose} isOpen={isOpen} isCentered>
               <ModalOverlay />
               <ModalContent className="credit-score">
                 <ModalHeader>How much do you want to pay?</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                  <Slider onChange={(value) => { setPaymentAmount(value) }} defaultValue={0} min={0} max={owed} step={1}>
+                  <Slider onChange={(value) => { setPaymentAmount(value) }} defaultValue={0} min={0} max={owned} step={1}>
                     <SliderTrack bg="blue.100">
                       <Box position="relative" right={10} />
                       <SliderFilledTrack bg="blue" />
@@ -160,12 +162,6 @@ const Home = (props) => {
               </ModalContent>
             </Modal>
           </Col>
-        </Row>
-        <Row>
-          Next payment deadline:
-            <Col>
-          Minutes: {minutes} Seconds: {seconds}
-        </Col>
         </Row>
       </Container>
 
