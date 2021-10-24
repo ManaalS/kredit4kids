@@ -8,13 +8,15 @@ import '.././index.css'
 
 
 function CreditScore(props) {
-  const [creditScore, setCreditScore] = useState(props.creditScore);
   const [colorZone, setColorZone] = useState("green.400")
 
   useEffect(() => {
-    setCreditScore(creditScore)
-    if (creditScore <= 589) {
+    if (props.creditScore <= 629) {
       setColorZone("red.400")
+    } else if (props.creditScore <= 689) {
+      setColorZone("yellow.400")
+    } else if (props.creditScore <= 719) {
+      setColorZone("teal.400")
     } else {
       setColorZone("green.400")
     }
@@ -26,8 +28,8 @@ function CreditScore(props) {
       <Row>
         <Col>
           <h1> Your Credit Score </h1>
-          <CircularProgress size="120px" value={(creditScore / 850)*100} color={colorZone}>
-            <CircularProgressLabel>{creditScore}</CircularProgressLabel>
+          <CircularProgress size="300px" value={(props.creditScore / 850)*100} color={colorZone}>
+            <CircularProgressLabel>{props.creditScore}</CircularProgressLabel>
           </CircularProgress>
         </Col>
       </Row>
